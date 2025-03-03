@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerta de Stock Bajo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #dc3545;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 0 0 5px 5px;
+            border: 1px solid #ddd;
+            border-top: none;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .alert-badge {
+            display: inline-block;
+            background-color: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .button {
+            display: inline-block;
+            background-color: #0d6efd;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Alerta de Stock Bajo</h1>
+        </div>
+        <div class="content">
+            <p>El siguiente activo ha llegado a un nivel de stock bajo:</p>
+            
+            <table>
+                <tr>
+                    <th>Nombre:</th>
+                    <td>{{ stock.nombre }}</td>
+                </tr>
+                <tr>
+                    <th>Modelo:</th>
+                    <td>{{ stock.modelo }}</td>
+                </tr>
+                <tr>
+                    <th>Fabricante:</th>
+                    <td>{{ stock.fabricante.nombre }}</td>
+                </tr>
+                <tr>
+                    <th>Cantidad actual:</th>
+                    <td><strong>{{ stock.cantidad }}</strong></td>
+                </tr>
+                <tr>
+                    <th>Cantidad mínima:</th>
+                    <td>{{ stock.cantidad_minima }}</td>
+                </tr>
+                <tr>
+                    <th>Estado:</th>
+                    <td><span class="alert-badge">Stock Bajo</span></td>
+                </tr>
+                <tr>
+                    <th>Ubicación en almacén:</th>
+                    <td>{{ stock.ubicacion_almacen|default:"No especificada" }}</td>
+                </tr>
+            </table>
+            
+            <p>Por favor, revise y reabastezca el inventario según sea necesario para garantizar la disponibilidad de este activo.</p>
+            
+            <p>
+                <a href="http://127.0.0.1:8000/stock/{{ stock.id }}/" class="button">Ver Detalles en el Sistema</a>
+            </p>
+            
+            <p>Para registrar un nuevo movimiento de entrada, vaya a la sección de "Control de Stock" en el sistema.</p>
+            
+            <hr>
+            
+            <h3>Información adicional</h3>
+            <p>Este activo se utiliza principalmente en las siguientes áreas:</p>
+            <ul>
+                {% for area in areas_uso %}
+                <li>{{ area }}</li>
+                {% empty %}
+                <li>No hay información disponible sobre áreas de uso</li>
+                {% endfor %}
+            </ul>
+            
+            <p>Datos de contacto del fabricante:</p>
+            <ul>
+                <li>Nombre: {{ stock.fabricante.nombre }}</li>
+                <li>Email: {{ stock.fabricante.correo_contacto|default:"No disponible" }}</li>
+                <li>Teléfono: {{ stock.fabricante.telefono_contacto|default:"No disponible" }}</li>
+                <li>Sitio web: {{ stock.fabricante.sitio_web|default:"No disponible" }}</li>
+            </ul>
+        </div>
+        
+        <div class="footer">
+            <p>Este es un mensaje automático del Sistema de Control de Activos. Por favor, no responda a este correo.</p>
+            <p>Fecha de emisión: {{ fecha_actual|date:"d/m/Y H:i" }}</p>
+            <p>© {{ fecha_actual|date:"Y" }} Control de Activos - Planta de Carbonato de Litio</p>
+        </div>
+    </div>
+</body>
+</html>

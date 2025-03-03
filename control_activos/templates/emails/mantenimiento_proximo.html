@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recordatorio de Mantenimiento</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #0d6efd;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 0 0 5px 5px;
+            border: 1px solid #ddd;
+            border-top: none;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .alert-icon {
+            font-size: 24px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        .alert-banner {
+            background-color: #FFF3CD;
+            border: 1px solid #FFECB5;
+            color: #856404;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .priority-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        .priority-high {
+            background-color: #dc3545;
+            color: white;
+        }
+        .priority-medium {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .priority-normal {
+            background-color: #0d6efd;
+            color: white;
+        }
+        .button {
+            display: inline-block;
+            background-color: #0d6efd;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .button-green {
+            background-color: #198754;
+        }
+        .button-yellow {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .countdown {
+            font-size: 24px;
+            font-weight: bold;
+            color: #dc3545;
+            text-align: center;
+            margin: 15px 0;
+        }
+        .task-list {
+            margin-top: 15px;
+        }
+        .task-item {
+            padding: 8px 0;
+            border-bottom: 1px dashed #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Recordatorio de Mantenimiento</h1>
+        </div>
+        <div class="content">
+            <div class="alert-banner">
+                <span class="alert-icon">⚠️</span>
+                Mantenimiento programado en <strong>{{ dias_faltantes }} días</strong>
+            </div>
+            
+            <h2>Detalles del mantenimiento{{ mantenimiento.get_tipo_display|upper }}</h2>
+            
+            <table>
+                <tr>
+                    <th>Activo:</th>
+                    <td>{{ mantenimiento.nombre }} - {{ mantenimiento.modelo }}</td>
+                </tr>
+                <tr>
+                    <th>Fabricante:</th>
+                    <td>{{ mantenimiento.fabricante.nombre }}</td>
+                </tr>
+                <tr>
+                    <th>Tipo:</th>
+                    <td>
+                        {{ mantenimiento.get_tipo_display }}
+                        {% if mantenimiento.tipo == 'correctivo' %}
+                            <span class="priority-badge priority-high">Alta Prioridad</span>
+                        {% elif mantenimiento.tipo == 'predictivo' %}
+                            <span class="priority-badge priority-medium">Media Prioridad</span>
+                        {% else %}
+                            <span class="priority-badge priority-normal">Normal</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Fecha programada:</th>
+                    <td><strong>{{ mantenimiento.fecha_programada|date:"d/m/Y" }}</strong></td>
+                </tr>
+                <tr>
+                    <th>Responsable:</th>
+                    <td>{{ mantenimiento.responsable }}</td>
+                </tr>
+                <tr>
+                    <th>Duración estimada:</th>
+                    <td>{{ mantenimiento.duracion_estimada|default:"No especificada" }} minutos</td>
+                </tr>
+                <tr>
+                    <th>Requiere parada:</th>
+                    <td>{% if mantenimiento.requiere_parada %}Sí{% else %}No{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>Requiere repuestos:</th>
+                    <td>{% if mantenimiento.requiere_repuestos %}Sí{% else %}No{% endif %}</td>
+                </tr>
+            </table>
+            
+            <h3>Acciones a realizar:</h3>
+            <div class="task-list">
+                {% for linea in mantenimiento.acciones.splitlines %}
+                    {% if linea|length > 0 %}
+                        <div class="task-item">
+                            <span>✓</span> {{ linea }}
+                        </div>
+                    {% endif %}
+                {% empty %}
+                    <p>No hay acciones detalladas para este mantenimiento.</p>
+                {% endfor %}
+            </div>
+            
+            <div class="countdown">
+                Faltan {{ dias_faltantes }} días
+            </div>
+            
+            <p>
+                <a href="http://127.0.0.1:8000/mantenimiento/{{ mantenimiento.id }}/" class="button">Ver Detalles en el Sistema</a>
+                <a href="http://127.0.0.1:8000/mantenimiento/{{ mantenimiento.id }}/completar/" class="button button-green">Marcar Completado</a>
+                <a href="http://127.0.0.1:8000/mantenimiento/{{ mantenimiento.id }}/posponer/" class="button button-yellow">Posponer</a>
+            </p>
+            
+            {% if mantenimiento.observaciones %}
+                <h3>Observaciones adicionales:</h3>
+                <p>{{ mantenimiento.observaciones|linebreaks }}</p>
+            {% endif %}
+        </div>
+        
+        <div class="footer">
+            <p>Este es un mensaje automático del Sistema de Control de Activos. Por favor, no responda a este correo.</p>
+            <p>Fecha de emisión: {{ fecha_actual|date:"d/m/Y H:i" }}</p>
+            <p>© {{ fecha_actual|date:"Y" }} Control de Activos - Planta de Carbonato de Litio</p>
+        </div>
+    </div>
+</body>
+</html>

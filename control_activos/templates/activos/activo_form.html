@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ title }} - Control de Activos{% endblock %}
+
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{% url 'home' %}">Inicio</a></li>
+<li class="breadcrumb-item"><a href="{% url 'activo_list' %}">Lista de Activos</a></li>
+<li class="breadcrumb-item active">{{ title }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    {% if activo %}
+                        <i class="fas fa-edit me-2"></i>Editar Activo
+                    {% else %}
+                        <i class="fas fa-plus me-2"></i>Nuevo Activo
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="border-bottom pb-2">Información Básica</h5>
+                            {{ form.nombre|as_crispy_field }}
+                            {{ form.modelo|as_crispy_field }}
+                            {{ form.fabricante|as_crispy_field }}
+                            {{ form.version|as_crispy_field }}
+                            {{ form.codigo_interno|as_crispy_field }}
+                            {{ form.numero_serie|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="border-bottom pb-2">Ubicación y Detalles</h5>
+                            {{ form.area|as_crispy_field }}
+                            {{ form.subarea|as_crispy_field }}
+                            {{ form.fecha_adquisicion|as_crispy_field }}
+                            {{ form.precio_adquisicion|as_crispy_field }}
+                            {{ form.imagen|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <h5 class="border-bottom pb-2">Descripción</h5>
+                            {{ form.descripcion|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-12 d-flex justify-content-between">
+                            <a href="{% url 'activo_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Guardar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Script para manejar la actualización de subáreas al cambiar el área
+    document.addEventListener('DOMContentLoaded', function() {
+        const areaSelect = document.getElementById('id_area_select');
+        const subareaSelect = document.getElementById('id_subarea_select');
+        
+        if (areaSelect && subareaSelect) {
+            areaSelect.addEventListener('change', function() {
+                const areaId = this.value;
+                
+                // Limpiar select de subáreas
+                subareaSelect.innerHTML = '<option value="">---------</option>';
+                
+                if (areaId) {
+                    // Realizar petición AJAX para obtener subáreas
+                    fetch(`/activos/api/get-subareas/?area_id=${areaId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            data.forEach(subarea => {
+                                const option = document.createElement('option');
+                                option.value = subarea.id;
+                                option.textContent = subarea.nombre;
+                                subareaSelect.appendChild(option);
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error al obtener subáreas:', error);
+                        });
+                }
+            });
+            
+            // Disparar evento al cargar la página si es formulario de edición
+            if (areaSelect.value) {
+                areaSelect.dispatchEvent(new Event('change'));
+            }
+        }
+    });
+</script>
+{% endblock %}

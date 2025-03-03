@@ -1,0 +1,350 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ activo.nombre }} - Detalle de Activo{% endblock %}
+
+{% block page_title %}Detalle del Activo{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{% url 'home' %}">Inicio</a></li>
+<li class="breadcrumb-item"><a href="{% url 'activo_list' %}">Lista de Activos</a></li>
+<li class="breadcrumb-item active">{{ activo.nombre }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-cube me-2"></i>Información del Activo
+                </h5>
+                <div>
+                    <a href="{% url 'activo_update' activo.id %}" class="btn btn-sm btn-light">
+                        <i class="fas fa-edit me-2"></i>Editar
+                    </a>
+                    <a href="{% url 'activo_delete' activo.id %}" class="btn btn-sm btn-danger ms-2">
+                        <i class="fas fa-trash me-2"></i>Eliminar
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="border-bottom pb-2">Datos Generales</h5>
+                        <table class="table table-sm">
+                            <tr>
+                                <th class="w-40">Nombre:</th>
+                                <td>{{ activo.nombre }}</td>
+                            </tr>
+                            <tr>
+                                <th>Modelo:</th>
+                                <td>{{ activo.modelo }}</td>
+                            </tr>
+                            <tr>
+                                <th>Fabricante:</th>
+                                <td>{{ activo.fabricante.nombre }}</td>
+                            </tr>
+                            <tr>
+                                <th>Versión:</th>
+                                <td>{{ activo.version|default:"No especificada" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Código Interno:</th>
+                                <td>{{ activo.codigo_interno|default:"No especificado" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Número de Serie:</th>
+                                <td>{{ activo.numero_serie|default:"No especificado" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="border-bottom pb-2">Ubicación y Adquisición</h5>
+                        <table class="table table-sm">
+                            <tr>
+                                <th class="w-40">Área:</th>
+                                <td>{{ activo.area.nombre }}</td>
+                            </tr>
+                            <tr>
+                                <th>Sub Área:</th>
+                                <td>{{ activo.subarea.nombre }}</td>
+                            </tr>
+                            <tr>
+                                <th>Fecha Adquisición:</th>
+                                <td>{{ activo.fecha_adquisicion|date:"d/m/Y"|default:"No especificada" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Precio Adquisición:</th>
+                                <td>
+                                    {% if activo.precio_adquisicion %}
+                                        ${{ activo.precio_adquisicion|floatformat:2 }}
+                                    {% else %}
+                                        No especificado
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Fecha Creación:</th>
+                                <td>{{ activo.fecha_creacion|date:"d/m/Y H:i" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Última Actualización:</th>
+                                <td>{{ activo.fecha_actualizacion|date:"d/m/Y H:i" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <h5 class="border-bottom pb-2 mt-4">Descripción</h5>
+                <div class="mb-4">
+                    {% if activo.descripcion %}
+                        {{ activo.descripcion|linebreaks }}
+                    {% else %}
+                        <p class="text-muted">Sin descripción</p>
+                    {% endif %}
+                </div>
+                
+                <h5 class="border-bottom pb-2 mt-4">Información del Fabricante</h5>
+                <table class="table table-sm">
+                    <tr>
+                        <th class="w-25">Nombre:</th>
+                        <td>{{ activo.fabricante.nombre }}</td>
+                    </tr>
+                    <tr>
+                        <th>País:</th>
+                        <td>{{ activo.fabricante.pais|default:"No especificado" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Sitio Web:</th>
+                        <td>
+                            {% if activo.fabricante.sitio_web %}
+                                <a href="{{ activo.fabricante.sitio_web }}" target="_blank">{{ activo.fabricante.sitio_web }}</a>
+                            {% else %}
+                                No especificado
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Contacto:</th>
+                        <td>
+                            {% if activo.fabricante.correo_contacto %}
+                                <a href="mailto:{{ activo.fabricante.correo_contacto }}">{{ activo.fabricante.correo_contacto }}</a>
+                                {% if activo.fabricante.telefono_contacto %}
+                                    | {{ activo.fabricante.telefono_contacto }}
+                                {% endif %}
+                            {% else %}
+                                {% if activo.fabricante.telefono_contacto %}
+                                    {{ activo.fabricante.telefono_contacto }}
+                                {% else %}
+                                    No especificado
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Mantenimientos relacionados -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-tools me-2"></i>Historial de Mantenimientos
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if activo.mantenimientos.all %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>Estado</th>
+                                    <th>Fecha Programada</th>
+                                    <th>Fecha Realizada</th>
+                                    <th>Responsable</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for mant in activo.mantenimientos.all|dictsortreversed:"fecha_programada" %}
+                                <tr>
+                                    <td>
+                                        {% if mant.tipo == 'preventivo' %}
+                                            <span class="badge bg-primary">Preventivo</span>
+                                        {% elif mant.tipo == 'correctivo' %}
+                                            <span class="badge bg-danger">Correctivo</span>
+                                        {% elif mant.tipo == 'predictivo' %}
+                                            <span class="badge bg-success">Predictivo</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if mant.estado == 'programado' %}
+                                            <span class="badge bg-secondary">Programado</span>
+                                        {% elif mant.estado == 'en_proceso' %}
+                                            <span class="badge bg-warning text-dark">En Proceso</span>
+                                        {% elif mant.estado == 'completado' %}
+                                            <span class="badge bg-success">Completado</span>
+                                        {% elif mant.estado == 'pospuesto' %}
+                                            <span class="badge bg-info">Pospuesto</span>
+                                        {% elif mant.estado == 'cancelado' %}
+                                            <span class="badge bg-danger">Cancelado</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ mant.fecha_programada|date:"d/m/Y" }}</td>
+                                    <td>
+                                        {% if mant.fecha_realizada %}
+                                            {{ mant.fecha_realizada|date:"d/m/Y" }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ mant.responsable }}</td>
+                                    <td>
+                                        <a href="{% url 'mantenimiento_detail' mant.id %}" class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No hay mantenimientos registrados para este activo.</p>
+                    <a href="{% url 'mantenimiento_create' %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-plus me-2"></i>Programar Mantenimiento
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Imagen del Activo -->
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-image me-2"></i>Imagen
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                {% if activo.imagen %}
+                    <img src="{{ activo.imagen.url }}" alt="{{ activo.nombre }}" class="img-fluid" style="max-height: 300px;">
+                {% else %}
+                    <div class="border p-5 bg-light">
+                        <i class="fas fa-cube fa-5x text-muted"></i>
+                        <p class="mt-3 text-muted">Sin imagen disponible</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Información de Estado -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Estado y Clasificación
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Estado en Stock -->
+                <div class="mb-3 p-3 border rounded">
+                    <h6 class="border-bottom pb-2">Stock</h6>
+                    {% if stock_info %}
+                        <div class="d-flex justify-content-between">
+                            <span>Cantidad:</span>
+                            <strong>{{ stock_info.cantidad }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Cantidad mínima:</span>
+                            <strong>{{ stock_info.cantidad_minima }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Estado:</span>
+                            <strong>
+                                {% if stock_info.estado == 'Sin stock' %}
+                                    <span class="text-danger">Sin stock</span>
+                                {% elif stock_info.estado == 'Stock bajo' %}
+                                    <span class="text-warning">Stock bajo</span>
+                                {% else %}
+                                    <span class="text-success">Stock adecuado</span>
+                                {% endif %}
+                            </strong>
+                        </div>
+                        <div class="mt-2">
+                            <a href="{% url 'stock_detail' stock_info.id %}" class="btn btn-sm btn-outline-primary w-100">
+                                <i class="fas fa-boxes me-2"></i>Ver Detalles de Stock
+                            </a>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No se encontró información de stock para este activo.</p>
+                    {% endif %}
+                </div>
+                
+                <!-- Criticidad -->
+                <div class="mb-3 p-3 border rounded">
+                    <h6 class="border-bottom pb-2">Criticidad</h6>
+                    {% if critico_info %}
+                        <div class="d-flex justify-content-between">
+                            <span>Nivel:</span>
+                            <strong>
+                                {% if critico_info.criticidad == 'baja' %}
+                                    <span class="text-success">Baja</span>
+                                {% elif critico_info.criticidad == 'media' %}
+                                    <span class="text-primary">Media</span>
+                                {% elif critico_info.criticidad == 'alta' %}
+                                    <span class="text-warning">Alta</span>
+                                {% else %}
+                                    <span class="text-danger">Extrema</span>
+                                {% endif %}
+                            </strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Impacto en producción:</span>
+                            <strong>{{ critico_info.get_impacto_produccion_display }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Estrategia:</span>
+                            <strong>{{ critico_info.get_estrategia_recomendada_display }}</strong>
+                        </div>
+                        <div class="mt-2">
+                            <a href="{% url 'critico_detail' critico_info.id %}" class="btn btn-sm btn-outline-danger w-100">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Ver Detalles de Criticidad
+                            </a>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">Este activo no está clasificado como crítico.</p>
+                    {% endif %}
+                </div>
+                
+                <!-- Obsolescencia -->
+                <div class="p-3 border rounded">
+                    <h6 class="border-bottom pb-2">Obsolescencia</h6>
+                    {% if obsoleto_info %}
+                        <div class="d-flex justify-content-between">
+                            <span>Estado:</span>
+                            <strong>{{ obsoleto_info.get_estado_actual_display }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Año instalación:</span>
+                            <strong>{{ obsoleto_info.ano_instalacion }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Vida útil:</span>
+                            <strong>{{ obsoleto_info.vida_util }} años</strong>
+                        </div>
+                        <div class="mt-2">
+                            <a href="{% url 'obsoleto_detail' obsoleto_info.id %}" class="btn btn-sm btn-outline-warning w-100">
+                                <i class="fas fa-history me-2"></i>Ver Detalles de Obsolescencia
+                            </a>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">Este activo no está clasificado como obsoleto.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

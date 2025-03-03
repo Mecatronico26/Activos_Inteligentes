@@ -1,0 +1,335 @@
+{% extends 'base.html' %}
+
+{% block title %}Activos Críticos - Control de Activos{% endblock %}
+
+{% block page_title %}Activos Críticos{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{% url 'home' %}">Inicio</a></li>
+<li class="breadcrumb-item active">Activos Críticos</li>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <!-- Resumen de criticidad -->
+    <div class="col-md-5 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>Distribución de Criticidad
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="criticidadChart" width="400" height="250"></canvas>
+                
+                <div class="row mt-4 text-center">
+                    {% for item in resumen_criticidad %}
+                        <div class="col-md-3 col-6 mb-3">
+                            <div class="p-2 rounded
+                                {% if item.criticidad == 'baja' %}
+                                    bg-success text-white
+                                {% elif item.criticidad == 'media' %}
+                                    bg-primary text-white
+                                {% elif item.criticidad == 'alta' %}
+                                    bg-warning
+                                {% else %}
+                                    bg-danger text-white
+                                {% endif %}
+                            ">
+                                <h4 class="mb-1">{{ item.count }}</h4>
+                                <small>
+                                    {% if item.criticidad == 'baja' %}
+                                        Baja
+                                    {% elif item.criticidad == 'media' %}
+                                        Media
+                                    {% elif item.criticidad == 'alta' %}
+                                        Alta
+                                    {% else %}
+                                        Extrema
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- IA y Machine Learning -->
+    <div class="col-md-7 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-brain me-2"></i>Análisis de Criticidad con IA
+                </h5>
+            </div>
+            <div class="card-body">
+                <p>
+                    El sistema utiliza algoritmos de inteligencia artificial (K-means clustering) para clasificar automáticamente los activos según su criticidad, basándose en tres factores clave:
+                </p>
+                
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <div class="card bg-light mb-3">
+                            <div class="card-body text-center">
+                                <i class="fas fa-industry fa-2x text-danger mb-2"></i>
+                                <h6>Impacto en Producción</h6>
+                                <p class="small mb-0">Consecuencias de una falla en la producción general</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light mb-3">
+                            <div class="card-body text-center">
+                                <i class="fas fa-boxes fa-2x text-warning mb-2"></i>
+                                <h6>Disponibilidad de Repuestos</h6>
+                                <p class="small mb-0">Facilidad para conseguir repuestos en el mercado</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light mb-3">
+                            <div class="card-body text-center">
+                                <i class="fas fa-exclamation-triangle fa-2x text-primary mb-2"></i>
+                                <h6>Probabilidad de Falla</h6>
+                                <p class="small mb-0">Frecuencia histórica o esperada de fallos</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if grafico %}
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <div class="border p-3 rounded">
+                            <h6 class="border-bottom pb-2 mb-3">Distribución 3D de Criticidad (último análisis)</h6>
+                            <img src="{{ grafico }}" alt="Análisis de criticidad" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="d-grid gap-2 mt-3">
+                    <form method="post" action="{% url 'analisis_criticidad' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-sync me-2"></i>Realizar Análisis con IA
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Activos Críticos
+                </h5>
+                <div>
+                    <a href="{% url 'critico_create' %}" class="btn btn-sm btn-light">
+                        <i class="fas fa-plus me-2"></i>Nuevo Activo Crítico
+                    </a>
+                    <a href="{% url 'sincronizar_criticos' %}" class="btn btn-sm btn-light ms-2">
+                        <i class="fas fa-sync me-2"></i>Sincronizar desde Activos
+                    </a>
+                    <a href="{% url 'exportar_criticos_excel' %}" class="btn btn-sm btn-light ms-2">
+                        <i class="fas fa-file-excel me-2"></i>Exportar a Excel
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Filtros -->
+                <form method="get" action="{% url 'critico_list' %}" class="mb-4" id="filtros-form">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text">Buscar</span>
+                                <input type="text" name="q" class="form-control" placeholder="Nombre, modelo, fabricante" value="{{ query }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text">Criticidad</span>
+                                <select name="criticidad" class="form-select">
+                                    <option value="">Todas</option>
+                                    {% for crit in criticidad_choices %}
+                                    <option value="{{ crit.0 }}" {% if criticidad_filter == crit.0 %}selected{% endif %}>{{ crit.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text">Impacto</span>
+                                <select name="impacto" class="form-select">
+                                    <option value="">Todos</option>
+                                    {% for imp in impacto_choices %}
+                                    <option value="{{ imp.0 }}" {% if impacto_filter == imp.0 %}selected{% endif %}>{{ imp.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-filter me-2"></i>Filtrar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Tabla de activos críticos -->
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover datatable" data-order='[["5", "desc"]]'>
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Modelo</th>
+                                <th>Fabricante</th>
+                                <th>Impacto en Producción</th>
+                                <th>Disponibilidad Repuestos</th>
+                                <th>Criticidad</th>
+                                <th>Estrategia Recomendada</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for activo in activos_criticos %}
+                            <tr>
+                                <td>{{ activo.nombre }}</td>
+                                <td>{{ activo.modelo }}</td>
+                                <td>{{ activo.fabricante.nombre }}</td>
+                                <td>
+                                    {% if activo.impacto_produccion == 'bajo' %}
+                                        <span class="badge bg-success">Bajo</span>
+                                    {% elif activo.impacto_produccion == 'medio' %}
+                                        <span class="badge bg-primary">Medio</span>
+                                    {% elif activo.impacto_produccion == 'alto' %}
+                                        <span class="badge bg-warning text-dark">Alto</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Crítico</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if activo.disponibilidad_repuestos == 'alta' %}
+                                        <span class="badge bg-success">Alta</span>
+                                    {% elif activo.disponibilidad_repuestos == 'media' %}
+                                        <span class="badge bg-primary">Media</span>
+                                    {% elif activo.disponibilidad_repuestos == 'baja' %}
+                                        <span class="badge bg-warning text-dark">Baja</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Nula</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if activo.criticidad == 'baja' %}
+                                        <span class="badge bg-success">Baja</span>
+                                    {% elif activo.criticidad == 'media' %}
+                                        <span class="badge bg-primary">Media</span>
+                                    {% elif activo.criticidad == 'alta' %}
+                                        <span class="badge bg-warning text-dark">Alta</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Extrema</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ activo.get_estrategia_recomendada_display }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{% url 'critico_detail' activo.id %}" class="btn btn-info" title="Ver detalles">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{% url 'critico_update' activo.id %}" class="btn btn-primary" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{% url 'critico_delete' activo.id %}" class="btn btn-danger" title="Eliminar" onclick="return confirm('¿Está seguro de que desea eliminar este activo crítico?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="8" class="text-center">No hay activos críticos registrados. <a href="{% url 'critico_create' %}">Crear uno nuevo</a> o <a href="{% url 'sincronizar_criticos' %}">sincronizar desde activos</a>.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Inicializar DataTable con opciones
+        $('.datatable').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.12.1/i18n/es-ES.json'
+            },
+            pageLength: 25,
+            responsive: true
+        });
+        
+        // Gráfico de distribución de criticidad
+        const ctx = document.getElementById('criticidadChart').getContext('2d');
+        
+        // Preparar datos para el gráfico
+        const criticidadData = {
+            labels: [
+                {% for item in resumen_criticidad %}
+                    {% if item.criticidad == 'baja' %}
+                        'Baja'
+                    {% elif item.criticidad == 'media' %}
+                        'Media'
+                    {% elif item.criticidad == 'alta' %}
+                        'Alta'
+                    {% else %}
+                        'Extrema'
+                    {% endif %}
+                    {% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ],
+            data: [
+                {% for item in resumen_criticidad %}
+                    {{ item.count }}{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ]
+        };
+        
+        // Crear gráfico
+        const criticidadChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: criticidadData.labels,
+                datasets: [{
+                    data: criticidadData.data,
+                    backgroundColor: [
+                        '#28a745', // Baja
+                        '#0d6efd', // Media
+                        '#ffc107', // Alta
+                        '#dc3545'  // Extrema
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Distribución de activos por criticidad'
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,497 @@
+/* static/css/styles.css */
+/* Estilos personalizados para el Sistema de Control de Activos */
+
+/* ======== General ======== */
+body {
+    background-color: #f8f9fa;
+    color: #333;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.footer {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-top: 1px solid #e7e7e7;
+}
+
+/* ======== Cards ======== */
+.card {
+    margin-bottom: 1rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.card-header {
+    font-weight: 500;
+    padding: 0.75rem 1.25rem;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+/* ======== Navigation ======== */
+.navbar {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 600;
+}
+
+.nav-link {
+    font-weight: 500;
+}
+
+/* ======== Forms ======== */
+.form-control:focus, .form-select:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+/* ======== Buttons ======== */
+.btn {
+    border-radius: 0.35rem;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+.btn-success {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #212529;
+}
+
+.btn-info {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+    color: #fff;
+}
+
+/* ======== Tables ======== */
+.table {
+    width: 100%;
+    margin-bottom: 1rem;
+    background-color: transparent;
+}
+
+.table th {
+    font-weight: 600;
+    vertical-align: bottom;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.075);
+}
+
+/* ======== Status indicators ======== */
+.status-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.status-success {
+    background-color: #28a745;
+}
+
+.status-warning {
+    background-color: #ffc107;
+}
+
+.status-danger {
+    background-color: #dc3545;
+}
+
+.status-info {
+    background-color: #17a2b8;
+}
+
+/* ======== Criticidad indicators ======== */
+.criticidad-badge {
+    font-size: 0.85rem;
+    padding: 0.35em 0.65em;
+    font-weight: 700;
+    border-radius: 0.35rem;
+}
+
+.criticidad-baja {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.criticidad-media {
+    background-color: #cff4fc;
+    color: #055160;
+}
+
+.criticidad-alta {
+    background-color: #fff3cd;
+    color: #664d03;
+}
+
+.criticidad-extrema {
+    background-color: #f8d7da;
+    color: #842029;
+}
+
+/* ======== Progress bars ======== */
+.progress {
+    height: 0.75rem;
+    border-radius: 0.5rem;
+    background-color: #e9ecef;
+}
+
+.progress-low {
+    background-color: #28a745;
+}
+
+.progress-medium {
+    background-color: #ffc107;
+}
+
+.progress-high {
+    background-color: #dc3545;
+}
+
+/* ======== Dashboard widgets ======== */
+.dashboard-card {
+    position: relative;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-icon {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    font-size: 3rem;
+    opacity: 0.15;
+}
+
+.dashboard-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.dashboard-label {
+    font-size: 1rem;
+    color: #6c757d;
+}
+
+/* ======== Charts ======== */
+.chart-container {
+    position: relative;
+    margin: auto;
+    height: 300px;
+    width: 100%;
+}
+
+/* ======== Image previews ======== */
+.image-preview {
+    max-width: 300px;
+    max-height: 300px;
+    border: 1px solid #ddd;
+    border-radius: 0.35rem;
+    padding: 5px;
+    margin-top: 10px;
+}
+
+/* ======== Modal styles ======== */
+.modal-content {
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-title {
+    font-weight: 600;
+}
+
+/* ======== Notifications ======== */
+.alert {
+    border-radius: 0.35rem;
+    font-weight: 500;
+}
+
+/* ======== AI Module styles ======== */
+.ai-insight {
+    background-color: #f0f8ff;
+    padding: 15px;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    border-left: 5px solid #0d6efd;
+}
+
+.ai-chart {
+    min-height: 300px;
+    background-color: white;
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    padding: 10px;
+}
+
+.anomaly-point {
+    background-color: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.5);
+    border-radius: 0.35rem;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+/* ======== Responsive adjustments ======== */
+@media (max-width: 767.98px) {
+    .card-title {
+        font-size: 1.1rem;
+    }
+    
+    .dashboard-value {
+        font-size: 1.8rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+    
+    .btn-group-sm > .btn {
+        padding: 0.25rem 0.4rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* ======== Custom DataTables styling ======== */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_processing,
+.dataTables_wrapper .dataTables_paginate {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    border-radius: 0.35rem;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: #0d6efd;
+    color: white !important;
+    border: 1px solid #0d6efd;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background: #0b5ed7;
+    color: white !important;
+    border: 1px solid #0a58ca;
+}
+
+/* ======== Animations ======== */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.slide-in {
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ======== Icons and badges ======== */
+.icon-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    margin-right: 5px;
+}
+
+.icon-badge i {
+    font-size: 12px;
+}
+
+/* ======== Print styles ======== */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+    
+    body {
+        font-size: 12pt;
+    }
+    
+    .container {
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+}
+
+/* ======== Custom checkbox and radio ======== */
+.custom-control-input:checked ~ .custom-control-label::before {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* ======== Image gallery ======== */
+.image-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.gallery-item {
+    border: 1px solid #ddd;
+    border-radius: 0.35rem;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.gallery-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.gallery-image {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+}
+
+/* ======== File upload ======== */
+.custom-file-upload {
+    border: 1px dashed #ddd;
+    border-radius: 0.35rem;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.custom-file-upload:hover {
+    background-color: #f8f9fa;
+}
+
+.upload-icon {
+    font-size: 2rem;
+    color: #6c757d;
+    margin-bottom: 10px;
+}
+
+/* ======== Timeline ======== */
+.timeline {
+    position: relative;
+    margin: 20px 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.timeline:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 20px;
+    width: 3px;
+    background: #e9ecef;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+    padding-left: 45px;
+}
+
+.timeline-badge {
+    position: absolute;
+    top: 0;
+    left: 10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #0d6efd;
+    z-index: 1;
+}
+
+.timeline-content {
+    padding: 15px;
+    background: white;
+    border-radius: 0.35rem;
+    border: 1px solid #e9ecef;
+}
+
+.timeline-date {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.85rem;
+    color: #6c757d;
+}

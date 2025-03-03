@@ -1,0 +1,317 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard de IA - Control de Activos{% endblock %}
+
+{% block page_title %}Inteligencia Artificial y Machine Learning{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{% url 'home' %}">Inicio</a></li>
+<li class="breadcrumb-item active">Dashboard de IA</li>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3 class="card-title">
+                            <i class="fas fa-brain me-2"></i>Análisis Inteligente
+                        </h3>
+                        <p class="card-text">
+                            Este módulo utiliza algoritmos de Inteligencia Artificial y Machine Learning
+                            para optimizar la gestión de activos, predecir fallas, clasificar
+                            automáticamente activos críticos y detectar anomalías.
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <i class="fas fa-robot fa-5x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contadores -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-light h-100">
+            <div class="card-body text-center">
+                <div class="display-4 mb-2">{{ total_activos }}</div>
+                <h5 class="text-muted">Activos Totales</h5>
+                <i class="fas fa-cubes fa-3x text-primary opacity-25 position-absolute bottom-0 end-0 m-3"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-light h-100">
+            <div class="card-body text-center">
+                <div class="display-4 mb-2">{{ total_criticos }}</div>
+                <h5 class="text-muted">Activos Críticos</h5>
+                <i class="fas fa-exclamation-triangle fa-3x text-danger opacity-25 position-absolute bottom-0 end-0 m-3"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-light h-100">
+            <div class="card-body text-center">
+                <div class="display-4 mb-2">{{ total_obsoletos }}</div>
+                <h5 class="text-muted">Activos Obsoletos</h5>
+                <i class="fas fa-history fa-3x text-warning opacity-25 position-absolute bottom-0 end-0 m-3"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-light h-100">
+            <div class="card-body text-center">
+                <div class="display-4 mb-2">{{ total_mantenimientos }}</div>
+                <h5 class="text-muted">Mantenimientos</h5>
+                <i class="fas fa-tools fa-3x text-info opacity-25 position-absolute bottom-0 end-0 m-3"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Funcionalidades -->
+<div class="row mb-4">
+    <!-- Análisis de Criticidad -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>Análisis de Criticidad
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Clasificación automática de activos según su criticidad utilizando algoritmos
+                    de clustering (K-means). El sistema evalúa múltiples factores y asigna niveles
+                    de criticidad objetivos.
+                </p>
+                <div class="alert alert-danger">
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="fas fa-lightbulb fa-2x"></i>
+                        </div>
+                        <div>
+                            <h6 class="alert-heading">¿Cómo funciona?</h6>
+                            <p class="mb-0">El algoritmo analiza patrones en los datos de impacto en producción, 
+                            disponibilidad de repuestos y probabilidad de falla para agrupar activos en categorías 
+                            de criticidad similares.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'analisis_criticidad' %}" class="btn btn-danger w-100">
+                    <i class="fas fa-chart-pie me-2"></i>Analizar Criticidad
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Predicción de Fallas -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-exclamation-circle me-2"></i>Predicción de Fallas
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Predice posibles fallas antes de que ocurran mediante el análisis de datos
+                    históricos y lecturas de sensores. Utiliza algoritmos de Random Forest para
+                    calcular la probabilidad de falla.
+                </p>
+                <div class="alert alert-warning">
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="fas fa-lightbulb fa-2x"></i>
+                        </div>
+                        <div>
+                            <h6 class="alert-heading">¿Cómo funciona?</h6>
+                            <p class="mb-0">El modelo aprende de patrones en fallos históricos y 
+                            lecturas anómalas de sensores para identificar condiciones que preceden 
+                            a una falla, permitiendo acciones preventivas.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'prediccion_fallas' %}" class="btn btn-warning w-100">
+                    <i class="fas fa-exclamation-circle me-2"></i>Predecir Fallas
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Optimización de Mantenimiento -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 border-success">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-calendar-check me-2"></i>Optimización de Mantenimiento
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Determina el intervalo óptimo entre mantenimientos preventivos para cada activo,
+                    equilibrando costos, disponibilidad y riesgo de fallas. Genera recomendaciones
+                    personalizadas.
+                </p>
+                <div class="alert alert-success">
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="fas fa-lightbulb fa-2x"></i>
+                        </div>
+                        <div>
+                            <h6 class="alert-heading">¿Cómo funciona?</h6>
+                            <p class="mb-0">El algoritmo analiza el historial de mantenimientos, 
+                            eficiencia de las intervenciones, características del activo y su criticidad 
+                            para determinar la frecuencia óptima de mantenimiento.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'optimizacion_mantenimiento' %}" class="btn btn-success w-100">
+                    <i class="fas fa-calendar-check me-2"></i>Optimizar Mantenimiento
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Detección de Anomalías -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 border-info">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-search-plus me-2"></i>Detección de Anomalías
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Identifica automáticamente lecturas anómalas en sensores utilizando análisis
+                    estadístico (Z-score). Detecta patrones inusuales que podrían indicar problemas
+                    emergentes en los activos.
+                </p>
+                <div class="alert alert-info">
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="fas fa-lightbulb fa-2x"></i>
+                        </div>
+                        <div>
+                            <h6 class="alert-heading">¿Cómo funciona?</h6>
+                            <p class="mb-0">El sistema calcula la desviación estadística de cada lectura 
+                            respecto al comportamiento normal del sensor, identificando valores atípicos 
+                            que se desvían significativamente del patrón habitual.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'deteccion_anomalias' %}" class="btn btn-info w-100">
+                    <i class="fas fa-search-plus me-2"></i>Detectar Anomalías
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Anomalías Recientes -->
+{% if ultimas_anomalias %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-exclamation-circle me-2"></i>Últimas Anomalías Detectadas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Activo</th>
+                                <th>Plan de Monitoreo</th>
+                                <th>Valor Medido</th>
+                                <th>Umbral</th>
+                                <th>Fecha</th>
+                                <th>Responsable</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for anomalia in ultimas_anomalias %}
+                            <tr>
+                                <td>{{ anomalia.activo }}</td>
+                                <td>{{ anomalia.plan }}</td>
+                                <td class="text-danger fw-bold">{{ anomalia.valor }}</td>
+                                <td>{{ anomalia.umbral }}</td>
+                                <td>{{ anomalia.fecha }}</td>
+                                <td>{{ anomalia.responsable }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer text-end">
+                <a href="{% url 'deteccion_anomalias' %}" class="btn btn-sm btn-outline-danger">
+                    Ver todas las anomalías
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Información sobre datos -->
+<div class="row">
+    <div class="col-12">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-info-circle me-2"></i>Información importante
+                </h5>
+                <p class="card-text">
+                    Los modelos de IA y Machine Learning requieren datos suficientes para generar resultados
+                    precisos y confiables. Se recomienda tener:
+                </p>
+                <ul>
+                    <li>Al menos 10 activos registrados con datos completos</li>
+                    <li>Al menos 10 mantenimientos completados con información de tiempos y costos</li>
+                    <li>Al menos 20 lecturas de sensores para cada tipo de parámetro monitoreado</li>
+                </ul>
+                <p class="card-text">
+                    {% if suficientes_datos %}
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>Hay suficientes datos para usar los modelos de IA
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Se necesitan más datos para obtener resultados óptimos de los modelos de IA
+                    </div>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Código JavaScript adicional para el dashboard
+    $(document).ready(function() {
+        // Inicializar tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+    });
+</script>
+{% endblock %}

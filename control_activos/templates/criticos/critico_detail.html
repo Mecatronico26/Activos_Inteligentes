@@ -1,0 +1,376 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ activo_critico.nombre }} - Activo Crítico{% endblock %}
+
+{% block page_title %}Detalle de Activo Crítico{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{% url 'home' %}">Inicio</a></li>
+<li class="breadcrumb-item"><a href="{% url 'critico_list' %}">Activos Críticos</a></li>
+<li class="breadcrumb-item active">{{ activo_critico.nombre }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Información del Activo Crítico
+                </h5>
+                <div>
+                    <a href="{% url 'critico_update' activo_critico.id %}" class="btn btn-sm btn-light">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr>
+                        <th class="w-40">Nombre:</th>
+                        <td>{{ activo_critico.nombre }}</td>
+                    </tr>
+                    <tr>
+                        <th>Modelo:</th>
+                        <td>{{ activo_critico.modelo }}</td>
+                    </tr>
+                    <tr>
+                        <th>Fabricante:</th>
+                        <td>{{ activo_critico.fabricante.nombre }}</td>
+                    </tr>
+                    <tr>
+                        <th>Impacto en Producción:</th>
+                        <td>
+                            {% if activo_critico.impacto_produccion == 'bajo' %}
+                                <span class="badge bg-success">Bajo</span>
+                            {% elif activo_critico.impacto_produccion == 'medio' %}
+                                <span class="badge bg-primary">Medio</span>
+                            {% elif activo_critico.impacto_produccion == 'alto' %}
+                                <span class="badge bg-warning text-dark">Alto</span>
+                            {% else %}
+                                <span class="badge bg-danger">Crítico</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Disponibilidad de Repuestos:</th>
+                        <td>
+                            {% if activo_critico.disponibilidad_repuestos == 'alta' %}
+                                <span class="badge bg-success">Alta</span>
+                            {% elif activo_critico.disponibilidad_repuestos == 'media' %}
+                                <span class="badge bg-primary">Media</span>
+                            {% elif activo_critico.disponibilidad_repuestos == 'baja' %}
+                                <span class="badge bg-warning text-dark">Baja</span>
+                            {% else %}
+                                <span class="badge bg-danger">Nula</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Probabilidad de Falla:</th>
+                        <td>
+                            {% if activo_critico.probabilidad_falla == 'baja' %}
+                                <span class="badge bg-success">Baja</span>
+                            {% elif activo_critico.probabilidad_falla == 'media' %}
+                                <span class="badge bg-primary">Media</span>
+                            {% else %}
+                                <span class="badge bg-danger">Alta</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Criticidad:</th>
+                        <td>
+                            {% if activo_critico.criticidad == 'baja' %}
+                                <span class="badge bg-success">Baja</span>
+                            {% elif activo_critico.criticidad == 'media' %}
+                                <span class="badge bg-primary">Media</span>
+                            {% elif activo_critico.criticidad == 'alta' %}
+                                <span class="badge bg-warning text-dark">Alta</span>
+                            {% else %}
+                                <span class="badge bg-danger">Extrema</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Estrategia Recomendada:</th>
+                        <td>{{ activo_critico.get_estrategia_recomendada_display }}</td>
+                    </tr>
+                    <tr>
+                        <th>Fecha de Evaluación:</th>
+                        <td>{{ activo_critico.fecha_evaluacion|date:"d/m/Y" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Fecha de Revisión:</th>
+                        <td>
+                            {% if activo_critico.fecha_revision %}
+                                {{ activo_critico.fecha_revision|date:"d/m/Y" }}
+                            {% else %}
+                                No establecida
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Responsable:</th>
+                        <td>{{ activo_critico.responsable_evaluacion|default:"No especificado" }}</td>
+                    </tr>
+                </table>
+                
+                <div class="d-grid gap-2 mt-3">
+                    <a href="{% url 'programar_mantenimientos' %}?activo_id={{ activo_critico.id }}" class="btn btn-primary">
+                        <i class="fas fa-calendar-check me-2"></i>Programar Mantenimiento Preventivo
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        {% if activo_critico.observaciones %}
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="fas fa-comment me-2"></i>Observaciones</h5>
+            </div>
+            <div class="card-body">
+                {{ activo_critico.observaciones|linebreaks }}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Evaluación de Criticidad</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col">
+                        <canvas id="criticidadRadarChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+                
+                <h5 class="border-bottom pb-2 mb-3">Rangos de Criticidad</h5>
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <div class="p-2 text-center rounded bg-success text-white">
+                            <h6 class="mb-0">Baja</h6>
+                            <small>Valor < 2</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-2 text-center rounded bg-primary text-white">
+                            <h6 class="mb-0">Media</h6>
+                            <small>Valor 2-5</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-2 text-center rounded bg-warning">
+                            <h6 class="mb-0">Alta</h6>
+                            <small>Valor 5-9</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-2 text-center rounded bg-danger text-white">
+                            <h6 class="mb-0">Extrema</h6>
+                            <small>Valor > 9</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <h5 class="border-bottom pb-2 mb-3">Detalles del Cálculo</h5>
+                <table class="table table-bordered table-sm">
+                    <tr>
+                        <th>Factor</th>
+                        <th>Valor</th>
+                        <th>Peso</th>
+                        <th>Ponderado</th>
+                    </tr>
+                    <tr>
+                        <td>Impacto en Producción</td>
+                        <td>
+                            {% if activo_critico.impacto_produccion == 'bajo' %}
+                                1
+                            {% elif activo_critico.impacto_produccion == 'medio' %}
+                                2
+                            {% elif activo_critico.impacto_produccion == 'alto' %}
+                                3
+                            {% else %}
+                                4
+                            {% endif %}
+                        </td>
+                        <td>2.0</td>
+                        <td>
+                            {% if activo_critico.impacto_produccion == 'bajo' %}
+                                2.0
+                            {% elif activo_critico.impacto_produccion == 'medio' %}
+                                4.0
+                            {% elif activo_critico.impacto_produccion == 'alto' %}
+                                6.0
+                            {% else %}
+                                8.0
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Disponibilidad de Repuestos</td>
+                        <td>
+                            {% if activo_critico.disponibilidad_repuestos == 'alta' %}
+                                1
+                            {% elif activo_critico.disponibilidad_repuestos == 'media' %}
+                                2
+                            {% elif activo_critico.disponibilidad_repuestos == 'baja' %}
+                                3
+                            {% else %}
+                                4
+                            {% endif %}
+                        </td>
+                        <td>1.0</td>
+                        <td>
+                            {% if activo_critico.disponibilidad_repuestos == 'alta' %}
+                                1.0
+                            {% elif activo_critico.disponibilidad_repuestos == 'media' %}
+                                2.0
+                            {% elif activo_critico.disponibilidad_repuestos == 'baja' %}
+                                3.0
+                            {% else %}
+                                4.0
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Probabilidad de Falla</td>
+                        <td>
+                            {% if activo_critico.probabilidad_falla == 'baja' %}
+                                1
+                            {% elif activo_critico.probabilidad_falla == 'media' %}
+                                2
+                            {% else %}
+                                3
+                            {% endif %}
+                        </td>
+                        <td>1.5</td>
+                        <td>
+                            {% if activo_critico.probabilidad_falla == 'baja' %}
+                                1.5
+                            {% elif activo_critico.probabilidad_falla == 'media' %}
+                                3.0
+                            {% else %}
+                                4.5
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+                
+                <!-- Información sobre la estrategia recomendada -->
+                <div class="alert alert-info mt-3">
+                    <h5 class="alert-heading">Acciones recomendadas</h5>
+                    <p>De acuerdo con la evaluación de criticidad, se recomienda implementar la siguiente estrategia:</p>
+                    <strong>{{ activo_critico.get_estrategia_recomendada_display }}</strong>
+                    <hr>
+                    <p class="mb-0">
+                        {% if activo_critico.estrategia_recomendada == 'reemplazo' %}
+                            Programar el reemplazo planificado del activo para evitar fallas inesperadas que afecten la producción.
+                        {% elif activo_critico.estrategia_recomendada == 'stock' %}
+                            Mantener stock de repuestos críticos para garantizar disponibilidad inmediata ante cualquier fallo.
+                        {% elif activo_critico.estrategia_recomendada == 'monitoreo' %}
+                            Implementar monitoreo continuo de parámetros clave para detectar tempranamente posibles fallos.
+                        {% elif activo_critico.estrategia_recomendada == 'mantenimiento' %}
+                            Establecer un riguroso programa de mantenimiento preventivo para reducir probabilidad de fallas.
+                        {% elif activo_critico.estrategia_recomendada == 'redundancia' %}
+                            Implementar sistemas redundantes para garantizar continuidad operativa en caso de falla.
+                        {% else %}
+                            Implementar estrategias específicas según las características particulares del activo.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Gráfico de radar para visualizar factores de criticidad
+        const ctx = document.getElementById('criticidadRadarChart').getContext('2d');
+        
+        // Mapear valores a números
+        let impactoValue = 0;
+        {% if activo_critico.impacto_produccion == 'bajo' %}
+            impactoValue = 1;
+        {% elif activo_critico.impacto_produccion == 'medio' %}
+            impactoValue = 2;
+        {% elif activo_critico.impacto_produccion == 'alto' %}
+            impactoValue = 3;
+        {% else %}
+            impactoValue = 4;
+        {% endif %}
+        
+        let disponibilidadValue = 0;
+        {% if activo_critico.disponibilidad_repuestos == 'alta' %}
+            disponibilidadValue = 1;
+        {% elif activo_critico.disponibilidad_repuestos == 'media' %}
+            disponibilidadValue = 2;
+        {% elif activo_critico.disponibilidad_repuestos == 'baja' %}
+            disponibilidadValue = 3;
+        {% else %}
+            disponibilidadValue = 4;
+        {% endif %}
+        
+        let probabilidadValue = 0;
+        {% if activo_critico.probabilidad_falla == 'baja' %}
+            probabilidadValue = 1;
+        {% elif activo_critico.probabilidad_falla == 'media' %}
+            probabilidadValue = 2;
+        {% else %}
+            probabilidadValue = 3;
+        {% endif %}
+        
+        // Crear gráfico
+        const criticidadRadarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: [
+                    'Impacto en Producción',
+                    'Disponibilidad de Repuestos',
+                    'Probabilidad de Falla'
+                ],
+                datasets: [{
+                    label: 'Factores de Criticidad',
+                    data: [
+                        impactoValue,
+                        disponibilidadValue,
+                        probabilidadValue
+                    ],
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(255, 99, 132, 1)'
+                }]
+            },
+            options: {
+                elements: {
+                    line: {
+                        tension: 0.2
+                    }
+                },
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: true
+                        },
+                        min: 0,
+                        max: 4,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

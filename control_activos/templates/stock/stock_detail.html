@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ stock_activo.nombre }} - Detalle de Stock{% endblock %}
+
+{% block page_title %}Detalle de Stock{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{% url 'home' %}">Inicio</a></li>
+<li class="breadcrumb-item"><a href="{% url 'stock_list' %}">Control de Stock</a></li>
+<li class="breadcrumb-item active">{{ stock_activo.nombre }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-box me-2"></i>Información del Activo
+                </h5>
+                <div>
+                    <a href="{% url 'stock_update' stock_activo.id %}" class="btn btn-sm btn-light">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr>
+                        <th class="w-40">Nombre:</th>
+                        <td>{{ stock_activo.nombre }}</td>
+                    </tr>
+                    <tr>
+                        <th>Modelo:</th>
+                        <td>{{ stock_activo.modelo }}</td>
+                    </tr>
+                    <tr>
+                        <th>Fabricante:</th>
+                        <td>{{ stock_activo.fabricante.nombre }}</td>
+                    </tr>
+                    <tr>
+                        <th>Cantidad:</th>
+                        <td>
+                            <span class="badge bg-primary rounded-pill">{{ stock_activo.cantidad }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Cantidad Mínima:</th>
+                        <td>{{ stock_activo.cantidad_minima }}</td>
+                    </tr>
+                    <tr>
+                        <th>Estado:</th>
+                        <td>
+                            {% if stock_activo.estado_stock == "Sin stock" %}
+                                <span class="badge bg-danger">Sin stock</span>
+                            {% elif stock_activo.estado_stock == "Stock bajo" %}
+                                <span class="badge bg-warning text-dark">Stock bajo</span>
+                            {% else %}
+                                <span class="badge bg-success">Adecuado</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Ubicación:</th>
+                        <td>{{ stock_activo.ubicacion_almacen|default:"No especificada" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Última Actualización:</th>
+                        <td>{{ stock_activo.fecha_ultima_actualizacion|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                </table>
+                
+                <div class="d-grid gap-2 mt-3">
+                    <a href="{% url 'nuevo_movimiento' stock_activo.id %}" class="btn btn-success">
+                        <i class="fas fa-exchange-alt me-2"></i>Registrar Movimiento
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        {% if stock_activo.notas %}
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="fas fa-sticky-note me-2"></i>Notas</h5>
+            </div>
+            <div class="card-body">
+                {{ stock_activo.notas|linebreaks }}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-history me-2"></i>Historial de Movimientos</h5>
+            </div>
+            <div class="card-body">
+                {% if movimientos %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover datatable" data-order='[["0", "desc"]]'>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Tipo</th>
+                                <th>Cantidad</th>
+                                <th>Responsable</th>
+                                <th>Destino/Origen</th>
+                                <th>Orden de Trabajo</th>
+                                <th>Comentarios</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for mov in movimientos %}
+                            <tr>
+                                <td>{{ mov.fecha|date:"d/m/Y H:i" }}</td>
+                                <td>
+                                    {% if mov.tipo == 'entrada' %}
+                                        <span class="badge bg-success">Entrada</span>
+                                    {% elif mov.tipo == 'salida' %}
+                                        <span class="badge bg-danger">Salida</span>
+                                    {% else %}
+                                        <span class="badge bg-info">Ajuste</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <strong>{{ mov.cantidad }}</strong>
+                                </td>
+                                <td>{{ mov.responsable }}</td>
+                                <td>{{ mov.destino|default:"-" }}</td>
+                                <td>{{ mov.orden_trabajo|default:"-" }}</td>
+                                <td>
+                                    {% if mov.comentarios %}
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="popover" data-bs-content="{{ mov.comentarios }}">
+                                            <i class="fas fa-comment-dots"></i>
+                                        </button>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>No hay movimientos registrados para este activo.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Tendencia de Stock</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="stockChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Inicializar DataTable
+        $('.datatable').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.12.1/i18n/es-ES.json'
+            },
+            pageLength: 10,
+            responsive: true
+        });
+        
+        // Inicializar Popover
+        var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+        var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+            return new bootstrap.Popover(popoverTriggerEl)
+        });
+        
+        // Gráfico de tendencia de stock
+        const ctx = document.getElementById('stockChart').getContext('2d');
+        
+        // Extraer datos de movimientos
+        const movimientos = [
+            {% for mov in movimientos %}
+                {
+                    fecha: "{{ mov.fecha|date:'Y-m-d H:i' }}",
+                    tipo: "{{ mov.tipo }}",
+                    cantidad: {{ mov.cantidad }}
+                }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+        
+        // Preparar datos para el gráfico
+        let stockData = [];
+        let currentStock = {{ stock_activo.cantidad }};
+        
+        // Ordenar movimientos por fecha (más antiguo primero)
+        movimientos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+        
+        // Calcular stock histórico comenzando desde el stock actual y retrocediendo
+        for (let i = movimientos.length - 1; i >= 0; i--) {
+            const mov = movimientos[i];
+            if (mov.tipo === 'entrada') {
+                currentStock -= mov.cantidad;
+            } else if (mov.tipo === 'salida') {
+                currentStock += mov.cantidad;
+            }
+            // No hacemos nada con ajustes porque son más complejos
+        }
+        
+        // Ahora tenemos el stock inicial, construir la serie hacia adelante
+        let labels = [];
+        let data = [];
+        
+        // Añadir punto inicial
+        if (movimientos.length > 0) {
+            labels.push(new Date(movimientos[0].fecha).toLocaleDateString());
+            data.push(currentStock);
+            
+            // Construir serie
+            for (const mov of movimientos) {
+                if (mov.tipo === 'entrada') {
+                    currentStock += mov.cantidad;
+                } else if (mov.tipo === 'salida') {
+                    currentStock -= mov.cantidad;
+                }
+                
+                labels.push(new Date(mov.fecha).toLocaleDateString());
+                data.push(currentStock);
+            }
+        } else {
+            // Si no hay movimientos, mostrar solo el stock actual
+            labels.push(new Date().toLocaleDateString());
+            data.push({{ stock_activo.cantidad }});
+        }
+        
+        // Crear gráfico
+        const stockChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Nivel de Stock',
+                    data: data,
+                    backgroundColor: 'rgba(13, 110, 253, 0.2)',
+                    borderColor: 'rgba(13, 110, 253, 1)',
+                    borderWidth: 2,
+                    tension: 0.1,
+                    fill: true,
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Cantidad'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Fecha'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

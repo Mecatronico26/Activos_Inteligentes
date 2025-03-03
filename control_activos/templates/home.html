@@ -1,0 +1,320 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - Control de Activos{% endblock %}
+
+{% block page_title %}Control de Activos - Planta de Carbonato de Litio{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item active">Inicio</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h5 class="card-title">Sistema de Control de Activos</h5>
+                <p class="card-text">
+                    Bienvenido al sistema de gestión y control de activos de la planta de carbonato de litio.
+                    Este sistema le permite administrar el inventario de activos, monitorear el stock,
+                    gestionar activos críticos y obsoletos, así como programar y dar seguimiento a las actividades
+                    de mantenimiento.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Lista de Activos -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 border-primary">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list me-2"></i>Lista de Activos
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Registro completo de todos los activos de la planta, con
+                    información detallada, ubicación y especificaciones técnicas.
+                </p>
+                <ul class="list-group mb-3">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Filtrar por Modelo
+                        <span><i class="fas fa-filter text-primary"></i></span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Filtrar por Fabricante
+                        <span><i class="fas fa-filter text-primary"></i></span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Filtrar por Área
+                        <span><i class="fas fa-filter text-primary"></i></span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Filtrar por Sub Área
+                        <span><i class="fas fa-filter text-primary"></i></span>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'activo_list' %}" class="btn btn-primary w-100">
+                    <i class="fas fa-arrow-right me-2"></i>Acceder
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Control de Stock -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 border-success">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-boxes me-2"></i>Control de Stock
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Gestión del inventario de activos repetidos, control de cantidades,
+                    ubicaciones y movimientos de entrada y salida.
+                </p>
+                <div class="alert alert-success mb-3">
+                    <h6 class="alert-heading">Características</h6>
+                    <ul class="mb-0">
+                        <li>Conteo automático de activos por modelo</li>
+                        <li>Registro de movimientos de inventario</li>
+                        <li>Alertas de stock mínimo</li>
+                        <li>Histórico de entradas y salidas</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'stock_list' %}" class="btn btn-success w-100">
+                    <i class="fas fa-arrow-right me-2"></i>Acceder
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activos Críticos -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Activos Críticos
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Identificación y gestión de activos críticos para la operación, con
+                    evaluación de riesgos y estrategias de mitigación.
+                </p>
+                <div class="mb-3">
+                    <h6>Criterios de evaluación:</h6>
+                    <ul>
+                        <li>Impacto en Producción</li>
+                        <li>Disponibilidad de Repuestos</li>
+                        <li>Probabilidad de Falla</li>
+                        <li>Criticidad calculada automáticamente</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'critico_list' %}" class="btn btn-danger w-100">
+                    <i class="fas fa-arrow-right me-2"></i>Acceder
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Activos Obsoletos -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-history me-2"></i>Activos Obsoletos
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Registro de activos en fin de vida útil o tecnológicamente obsoletos,
+                    con plan de renovación y presupuesto estimado.
+                </p>
+                <div class="alert alert-warning mb-3">
+                    <h6 class="alert-heading">Información:</h6>
+                    <ul class="mb-0">
+                        <li>Año de instalación y vida útil</li>
+                        <li>Estado actual y disponibilidad de repuestos</li>
+                        <li>Estrategia de mitigación de riesgos</li>
+                        <li>Planificación presupuestaria para renovación</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'obsoleto_list' %}" class="btn btn-warning w-100">
+                    <i class="fas fa-arrow-right me-2"></i>Acceder
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mantenimiento -->
+    <div class="col-md-8 mb-4">
+        <div class="card h-100 border-info">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-tools me-2"></i>Mantenimiento
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Gestión completa de actividades de mantenimiento preventivo, correctivo y predictivo.
+                    Programación, seguimiento y registro histórico.
+                </p>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <i class="fas fa-shield-alt fa-3x mb-2 text-primary"></i>
+                                <h6>Preventivo</h6>
+                                <p class="small mb-0">Mantenimiento programado para prevenir fallas</p>
+                            </div>
+                            <div class="card-footer p-2">
+                                <a href="{% url 'mantenimiento_list' %}?tipo=preventivo" class="btn btn-sm btn-primary w-100">Ver</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <i class="fas fa-wrench fa-3x mb-2 text-danger"></i>
+                                <h6>Correctivo</h6>
+                                <p class="small mb-0">Reparaciones de fallas detectadas</p>
+                            </div>
+                            <div class="card-footer p-2">
+                                <a href="{% url 'mantenimiento_list' %}?tipo=correctivo" class="btn btn-sm btn-danger w-100">Ver</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <i class="fas fa-chart-line fa-3x mb-2 text-success"></i>
+                                <h6>Predictivo</h6>
+                                <p class="small mb-0">Monitoreo para predecir fallas</p>
+                            </div>
+                            <div class="card-footer p-2">
+                                <a href="{% url 'mantenimiento_list' %}?tipo=predictivo" class="btn btn-sm btn-success w-100">Ver</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-info mt-2">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <h6 class="alert-heading mb-1">Características del módulo de mantenimiento:</h6>
+                            <ul class="mb-0">
+                                <li>Programación de tareas con responsables</li>
+                                <li>Seguimiento de actividades pendientes y completadas</li>
+                                <li>Registro de costos y tiempos</li>
+                                <li>Análisis de eficiencia y cumplimiento</li>
+                                <li>Monitoreo de parámetros para mantenimiento predictivo</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-md-6 mb-2 mb-md-0">
+                        <a href="{% url 'mantenimiento_list' %}" class="btn btn-info w-100">
+                            <i class="fas fa-arrow-right me-2"></i>Ver Todos los Mantenimientos
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{% url 'plan_predictivo_list' %}" class="btn btn-outline-info w-100">
+                            <i class="fas fa-heartbeat me-2"></i>Monitoreo Predictivo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Inteligencia Artificial y Machine Learning -->
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="card border-primary">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-brain me-2"></i>Inteligencia Artificial y Machine Learning
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    El sistema incorpora modelos de IA y Machine Learning para optimizar la gestión de activos
+                    y predecir fallas antes de que ocurran.
+                </p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-chart-line text-primary me-2"></i>Predicción de Fallas
+                                </h6>
+                                <p class="card-text">
+                                    Algoritmos de Machine Learning que analizan datos históricos y lecturas
+                                    de sensores para predecir posibles fallas antes de que ocurran.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-cogs text-primary me-2"></i>Optimización de Mantenimiento
+                                </h6>
+                                <p class="card-text">
+                                    Recomendaciones inteligentes sobre cuándo realizar mantenimiento
+                                    preventivo basado en el análisis de patrones y condiciones de operación.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-calculator text-primary me-2"></i>Cálculo Automático de Criticidad
+                                </h6>
+                                <p class="card-text">
+                                    Evaluación objetiva de la criticidad de los activos basada en múltiples
+                                    factores ponderados mediante algoritmos de evaluación multifactorial.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-eye text-primary me-2"></i>Detección de Anomalías
+                                </h6>
+                                <p class="card-text">
+                                    Identificación automática de patrones inusuales en lecturas de sensores
+                                    o comportamiento de activos que podrían indicar problemas potenciales.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
