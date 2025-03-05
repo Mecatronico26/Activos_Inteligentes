@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ activo_obsoleto.nombre }} - Activo Obsoleto{% endblock %}
+
+{% block page_title %}Detalle de Activo Obsoleto{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{% url 'home' %}">Inicio</a></li>
+<li class="breadcrumb-item"><a href="{% url 'obsoleto_list' %}">Activos Obsoletos</a></li>
+<li class="breadcrumb-item active">{{ activo_obsoleto.nombre }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-history me-2"></i>Información del Activo Obsoleto
+                </h5>
+                <div>
+                    <a href="{% url 'obsoleto_update' activo_obsoleto.id %}" class="btn btn-sm btn-dark">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr>
+                        <th class="w-40">Nombre:</th>
+                        <td>{{ activo_obsoleto.nombre }}</td>
+                    </tr>
+                    <tr>
+                        <th>Modelo:</th>
+                        <td>{{ activo_obsoleto.modelo }}</td>
+                    </tr>
+                    <tr>
+                        <th>Fabricante:</th>
+                        <td>{{ activo_obsoleto.fabricante.nombre }}</td>
+                    </tr>
+                    <tr>
+                        <th>Año de Instalación:</th>
+                        <td>{{ activo_obsoleto.ano_instalacion }}</td>
+                    </tr>
+                    <tr>
+                        <th>Vida Útil:</th>
+                        <td>{{ activo_obsoleto.vida_util }} años</td>
+                    </tr>
+                    <tr>
+                        <th>Años en Servicio:</th>
+                        <td>{{ anos_en_servicio }} años</td>
+                    </tr>
+                    <tr>
+                        <th>Estado Actual:</th>
+                        <td>
+                            {% if activo_obsoleto.estado_actual == 'funcional' %}
+                                <span class="badge bg-success">Funcional</span>
+                            {% elif activo_obsoleto.estado_actual == 'deteriorado' %}
+                                <span class="badge bg-warning text-dark">Deteriorado</span>
+                            {% elif activo_obsoleto.estado_actual == 'obsoleto' %}
+                                <span class="badge bg-danger">Obsoleto</span>
+                            {% elif activo_obsoleto.estado_actual == 'falla' %}
+                                <span class="badge bg-danger">Con Fallas Recurrentes</span>
+                            {% else %}
+                                <span class="badge bg-dark">Discontinuado por Fabricante</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Disponibilidad de Repuestos:</th>
+                        <td>
+                            {% if activo_obsoleto.disponibilidad_repuestos == 'alta' %}
+                                <span class="badge bg-success">Alta</span>
+                            {% elif activo_obsoleto.disponibilidad_repuestos == 'media' %}
+                                <span class="badge bg-primary">Media</span>
+                            {% elif activo_obsoleto.disponibilidad_repuestos == 'baja' %}
+                                <span class="badge bg-warning text-dark">Baja</span>
+                            {% elif activo_obsoleto.disponibilidad_repuestos == 'nula' %}
+                                <span class="badge bg-danger">Nula</span>
+                            {% else %}
+                                <span class="badge bg-dark">Descontinuada por Fabricante</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Impacto en Producción:</th>
+                        <td>
+                            {% if activo_obsoleto.impacto_produccion == 'bajo' %}
+                                <span class="badge bg-success">Bajo</span>
+                            {% elif activo_obsoleto.impacto_produccion == 'medio' %}
+                                <span class="badge bg-primary">Medio</span>
+                            {% elif activo_obsoleto.impacto_produccion == 'alto' %}
+                                <span class="badge bg-warning text-dark">Alto</span>
+                            {% else %}
+                                <span class="badge bg-danger">Crítico</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        {% if activo_obsoleto.observaciones %}
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="fas fa-comment me-2"></i>Observaciones</h5>
+            </div>
+            <div class="card-body">
+                {{ activo_obsoleto.observaciones|linebreaks }}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="fas fa-business-time me-2"></i>Fin de Vida Útil</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <h4>Porcentaje de Vida Útil Consumida</h4>
+                    <div class="progress mt-3" style="height: 25px;">
+                        <div class="progress-bar
+                            {% if porcentaje_vida_util < 75 %}
+                                bg-success
+                            {% elif porcentaje_vida_util < 100 %}
+                                bg-warning
+                            {% else %}
+                                bg-danger
+                            {% endif %}"
+                            role="progressbar"
+                            style="width: {{ porcentaje_vida_util }}%;"
+                            aria-valuenow="{{ porcentaje_vida_util }}"
+                            aria-valuemin="0"
+                            aria-valuemax="100">
+                            {{ porcentaje_vida_util }}%
+                        </div>
+                    </div>
+                    <div class="mt-2 text-muted small">
+                        {% if porcentaje_vida_util < 75 %}
+                            El activo está dentro de su vida útil esperada.
+                        {% elif porcentaje_vida_util < 100 %}
+                            El activo se aproxima al fin de su vida útil.
+                        {% else %}
+                            El activo ha superado su vida útil estimada.
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card bg-light h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Estrategia de Mitigación</h5>
+                                <div class="mt-3">
+                                    <span class="badge
+                                        {% if activo_obsoleto.estrategia_mitigacion == 'reemplazo' %}
+                                            bg-danger
+                                        {% elif activo_obsoleto.estrategia_mitigacion == 'actualización' %}
+                                            bg-primary
+                                        {% elif activo_obsoleto.estrategia_mitigacion == 'extensión' %}
+                                            bg-success
+                                        {% elif activo_obsoleto.estrategia_mitigacion == 'redesign' %}
+                                            bg-info
+                                        {% elif activo_obsoleto.estrategia_mitigacion == 'redundancia' %}
+                                            bg-warning text-dark
+                                        {% else %}
+                                            bg-secondary
+                                        {% endif %}
+                                        p-2 fs-6">
+                                        {{ activo_obsoleto.get_estrategia_mitigacion_display }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-light h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Presupuesto Estimado</h5>
+                                <div class="mt-3">
+                                    {% if activo_obsoleto.presupuesto_estimado %}
+                                        <span class="display-6">${{ activo_obsoleto.presupuesto_estimado|floatformat:2 }}</span>
+                                    {% else %}
+                                        <span class="text-muted">No establecido</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card bg-light mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title border-bottom pb-2">Plan de Renovación</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Fecha de Renovación:</strong><br>
+                                {% if activo_obsoleto.fecha_renovacion %}
+                                    {{ activo_obsoleto.fecha_renovacion|date:"d/m/Y" }}
+                                {% else %}
+                                    No establecida
+                                {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Días Restantes:</strong><br>
+                                {% if dias_hasta_renovacion %}
+                                    {% if dias_hasta_renovacion > 0 %}
+                                        <span class="
+                                            {% if dias_hasta_renovacion < 30 %}
+                                                text-danger
+                                            {% elif dias_hasta_renovacion < 90 %}
+                                                text-warning
+                                            {% else %}
+                                                text-success
+                                            {% endif %}
+                                            fw-bold">
+                                            {{ dias_hasta_renovacion }} días
+                                        </span>
+                                    {% else %}
+                                        <span class="text-danger fw-bold">
+                                            Vencido ({{ dias_hasta_renovacion|abs }} días de retraso)
+                                        </span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-muted">No disponible</span>
+                                {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        {% if activo_obsoleto.fecha_renovacion and dias_hasta_renovacion < 90 %}
+                        <div class="alert
+                            {% if dias_hasta_renovacion < 30 %}
+                                alert-danger
+                            {% else %}
+                                alert-warning
+                            {% endif %}
+                            mt-3">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {% if dias_hasta_renovacion < 0 %}
+                                <strong>Alerta:</strong> La fecha de renovación ya ha pasado. Se recomienda tomar acción inmediata.
+                            {% elif dias_hasta_renovacion < 30 %}
+                                <strong>Alerta:</strong> Quedan menos de 30 días para la fecha de renovación programada.
+                            {% else %}
+                                <strong>Aviso:</strong> La fecha de renovación se aproxima. Prepare los recursos necesarios.
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="{% url 'obsoleto_update' activo_obsoleto.id %}" class="btn btn-primary">
+                        <i class="fas fa-edit me-2"></i>Actualizar Plan de Renovación
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

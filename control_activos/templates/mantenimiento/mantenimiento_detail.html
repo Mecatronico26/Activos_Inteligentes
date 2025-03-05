@@ -1,0 +1,383 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ mantenimiento.nombre }} - Detalle de Mantenimiento{% endblock %}
+
+{% block page_title %}Detalle de Mantenimiento{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{% url 'home' %}">Inicio</a></li>
+<li class="breadcrumb-item"><a href="{% url 'mantenimiento_list' %}">Mantenimiento</a></li>
+<li class="breadcrumb-item active">{{ mantenimiento.nombre }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header 
+                {% if mantenimiento.tipo == 'preventivo' %}
+                    bg-primary text-white
+                {% elif mantenimiento.tipo == 'correctivo' %}
+                    bg-danger text-white
+                {% else %}
+                    bg-success text-white
+                {% endif %}
+                d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    {% if mantenimiento.tipo == 'preventivo' %}
+                        <i class="fas fa-shield-alt me-2"></i>Mantenimiento Preventivo
+                    {% elif mantenimiento.tipo == 'correctivo' %}
+                        <i class="fas fa-wrench me-2"></i>Mantenimiento Correctivo
+                    {% else %}
+                        <i class="fas fa-chart-line me-2"></i>Mantenimiento Predictivo
+                    {% endif %}
+                </h5>
+                <div>
+                    <a href="{% url 'mantenimiento_update' mantenimiento.id %}" class="btn btn-sm btn-light">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="border-bottom pb-2">Información del Activo</h5>
+                        <table class="table">
+                            <tr>
+                                <th class="w-40">Nombre:</th>
+                                <td>{{ mantenimiento.nombre }}</td>
+                            </tr>
+                            <tr>
+                                <th>Modelo:</th>
+                                <td>{{ mantenimiento.modelo }}</td>
+                            </tr>
+                            <tr>
+                                <th>Fabricante:</th>
+                                <td>{{ mantenimiento.fabricante.nombre }}</td>
+                            </tr>
+                            {% if mantenimiento.activo %}
+                            <tr>
+                                <th>Activo:</th>
+                                <td>
+                                    <a href="{% url 'activo_detail' mantenimiento.activo.id %}">
+                                        Ver detalles del activo
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="border-bottom pb-2">Detalles del Mantenimiento</h5>
+                        <table class="table">
+                            <tr>
+                                <th class="w-40">Estado:</th>
+                                <td>
+                                    {% if mantenimiento.estado == 'programado' %}
+                                        <span class="badge bg-secondary">Programado</span>
+                                    {% elif mantenimiento.estado == 'en_proceso' %}
+                                        <span class="badge bg-warning text-dark">En Proceso</span>
+                                    {% elif mantenimiento.estado == 'completado' %}
+                                        <span class="badge bg-success">Completado</span>
+                                    {% elif mantenimiento.estado == 'pospuesto' %}
+                                        <span class="badge bg-info">Pospuesto</span>
+                                    {% elif mantenimiento.estado == 'cancelado' %}
+                                        <span class="badge bg-danger">Cancelado</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Fecha Programada:</th>
+                                <td {% if atrasado %}class="text-danger fw-bold"{% endif %}>
+                                    {{ mantenimiento.fecha_programada|date:"d/m/Y" }}
+                                    {% if atrasado %}
+                                        <i class="fas fa-exclamation-circle text-danger" title="Atrasado"></i>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Fecha Realizada:</th>
+                                <td>
+                                    {% if mantenimiento.fecha_realizada %}
+                                        {{ mantenimiento.fecha_realizada|date:"d/m/Y" }}
+                                    {% else %}
+                                        No completado
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Responsable:</th>
+                                <td>{{ mantenimiento.responsable }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <h5 class="border-bottom pb-2 mt-3">Acciones a Realizar</h5>
+                <div class="p-3 bg-light rounded">
+                    {{ mantenimiento.acciones|linebreaks }}
+                </div>
+                
+                {% if mantenimiento.observaciones %}
+                <h5 class="border-bottom pb-2 mt-3">Observaciones</h5>
+                <div class="p-3 bg-light rounded">
+                    {{ mantenimiento.observaciones|linebreaks }}
+                </div>
+                {% endif %}
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">Detalles Adicionales</h6>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <th>Duración Estimada:</th>
+                                        <td>
+                                            {% if mantenimiento.duracion_estimada %}
+                                                {{ mantenimiento.duracion_estimada }} minutos
+                                            {% else %}
+                                                No especificada
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Duración Real:</th>
+                                        <td>
+                                            {% if mantenimiento.duracion_real %}
+                                                {{ mantenimiento.duracion_real }} minutos
+                                            {% else %}
+                                                No completado
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Requiere Parada:</th>
+                                        <td>
+                                            {% if mantenimiento.requiere_parada %}
+                                                <i class="fas fa-check text-success"></i> Sí
+                                            {% else %}
+                                                <i class="fas fa-times text-danger"></i> No
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Requiere Repuestos:</th>
+                                        <td>
+                                            {% if mantenimiento.requiere_repuestos %}
+                                                <i class="fas fa-check text-success"></i> Sí
+                                            {% else %}
+                                                <i class="fas fa-times text-danger"></i> No
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">Información de Costos</h6>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <th>Costo Estimado:</th>
+                                        <td>
+                                            {% if mantenimiento.costo_estimado %}
+                                                ${{ mantenimiento.costo_estimado|floatformat:2 }}
+                                            {% else %}
+                                                No especificado
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Costo Real:</th>
+                                        <td>
+                                            {% if mantenimiento.costo_real %}
+                                                ${{ mantenimiento.costo_real|floatformat:2 }}
+                                            {% else %}
+                                                No completado
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Eficiencia en Tiempo:</th>
+                                        <td>
+                                            {% if eficiencia_tiempo %}
+                                                <span class="
+                                                    {% if eficiencia_tiempo > 100 %}
+                                                        text-success
+                                                    {% elif eficiencia_tiempo >= 80 %}
+                                                        text-warning
+                                                    {% else %}
+                                                        text-danger
+                                                    {% endif %}
+                                                ">
+                                                    {{ eficiencia_tiempo }}%
+                                                </span>
+                                            {% else %}
+                                                No disponible
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Eficiencia en Costo:</th>
+                                        <td>
+                                            {% if eficiencia_costo %}
+                                                <span class="
+                                                    {% if eficiencia_costo > 100 %}
+                                                        text-success
+                                                    {% elif eficiencia_costo >= 80 %}
+                                                        text-warning
+                                                    {% else %}
+                                                        text-danger
+                                                    {% endif %}
+                                                ">
+                                                    {{ eficiencia_costo }}%
+                                                </span>
+                                            {% else %}
+                                                No disponible
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Acciones disponibles -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Acciones</h5>
+            </div>
+            <div class="card-body">
+                {% if mantenimiento.estado == 'programado' or mantenimiento.estado == 'en_proceso' %}
+                    <div class="d-grid gap-2 mb-3">
+                        <a href="{% url 'completar_mantenimiento' mantenimiento.id %}" class="btn btn-success">
+                            <i class="fas fa-check-circle me-2"></i>Marcar como Completado
+                        </a>
+                        <a href="{% url 'posponer_mantenimiento' mantenimiento.id %}" class="btn btn-warning">
+                            <i class="fas fa-clock me-2"></i>Posponer Mantenimiento
+                        </a>
+                        <a href="{% url 'mantenimiento_update' mantenimiento.id %}" class="btn btn-primary">
+                            <i class="fas fa-edit me-2"></i>Editar Detalles
+                        </a>
+                    </div>
+                    
+                    {% if atrasado %}
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Atención:</strong> Este mantenimiento está atrasado. Se recomienda tomar acción inmediata.
+                        </div>
+                    {% endif %}
+                {% elif mantenimiento.estado == 'completado' %}
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>Mantenimiento completado</strong> el {{ mantenimiento.fecha_realizada|date:"d/m/Y" }}.
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'mantenimiento_create' %}?tipo={{ mantenimiento.tipo }}&activo_id={% if mantenimiento.activo %}{{ mantenimiento.activo.id }}{% endif %}" class="btn btn-outline-primary">
+                            <i class="fas fa-calendar-plus me-2"></i>Programar Siguiente Mantenimiento
+                        </a>
+                    </div>
+                {% elif mantenimiento.estado == 'pospuesto' %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Mantenimiento pospuesto</strong> para el {{ mantenimiento.fecha_programada|date:"d/m/Y" }}.
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'completar_mantenimiento' mantenimiento.id %}" class="btn btn-success">
+                            <i class="fas fa-check-circle me-2"></i>Marcar como Completado
+                        </a>
+                        <a href="{% url 'mantenimiento_update' mantenimiento.id %}" class="btn btn-primary">
+                            <i class="fas fa-edit me-2"></i>Editar Detalles
+                        </a>
+                    </div>
+                {% elif mantenimiento.estado == 'cancelado' %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-ban me-2"></i>
+                        <strong>Mantenimiento cancelado.</strong>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'mantenimiento_create' %}?tipo={{ mantenimiento.tipo }}&activo_id={% if mantenimiento.activo %}{{ mantenimiento.activo.id }}{% endif %}" class="btn btn-outline-primary">
+                            <i class="fas fa-calendar-plus me-2"></i>Programar Nuevo Mantenimiento
+                        </a>
+                    </div>
+                {% endif %}
+                
+                <hr>
+                
+                <!-- Acciones adicionales disponibles para todos los estados -->
+                <div class="d-grid gap-2">
+                    <a href="{% url 'mantenimiento_delete' mantenimiento.id %}" class="btn btn-outline-danger" onclick="return confirm('¿Está seguro de que desea eliminar este mantenimiento?')">
+                        <i class="fas fa-trash me-2"></i>Eliminar Mantenimiento
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Timeline del mantenimiento -->
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="fas fa-history me-2"></i>Historial</h5>
+            </div>
+            <div class="card-body p-0">
+                <ul class="timeline">
+                    <li class="timeline-item">
+                        <div class="timeline-badge bg-success"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-date">{{ mantenimiento.fecha_creacion|date:"d/m/Y H:i" }}</span>
+                            <strong>Creación</strong>
+                            <p class="mb-0 small">Mantenimiento registrado en el sistema</p>
+                        </div>
+                    </li>
+                    
+                    {% if mantenimiento.estado == 'en_proceso' or mantenimiento.estado == 'completado' or mantenimiento.estado == 'pospuesto' or mantenimiento.estado == 'cancelado' %}
+                    <li class="timeline-item">
+                        <div class="timeline-badge bg-primary"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-date">{{ mantenimiento.fecha_actualizacion|date:"d/m/Y H:i" }}</span>
+                            <strong>Actualización de Estado</strong>
+                            <p class="mb-0 small">
+                                {% if mantenimiento.estado == 'en_proceso' %}
+                                    Cambio a estado "En Proceso"
+                                {% elif mantenimiento.estado == 'completado' %}
+                                    Cambio a estado "Completado"
+                                {% elif mantenimiento.estado == 'pospuesto' %}
+                                    Cambio a estado "Pospuesto"
+                                {% elif mantenimiento.estado == 'cancelado' %}
+                                    Cambio a estado "Cancelado"
+                                {% endif %}
+                            </p>
+                        </div>
+                    </li>
+                    {% endif %}
+                    
+                    {% if mantenimiento.fecha_realizada %}
+                    <li class="timeline-item">
+                        <div class="timeline-badge bg-success"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-date">{{ mantenimiento.fecha_realizada|date:"d/m/Y" }}</span>
+                            <strong>Finalización</strong>
+                            <p class="mb-0 small">Mantenimiento completado</p>
+                        </div>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
